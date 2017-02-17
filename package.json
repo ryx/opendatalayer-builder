@@ -1,0 +1,27 @@
+{
+  "name": "opendatalayer-builder",
+  "version": "0.0.1",
+  "description": "Buildtool for the opendatalayer",
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.gkh-setu.de:bsna/opendatalayer-builder.git"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "build": "./node_modules/.bin/babel src/builder.js  --out-file=dist/builder.cjs.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "opendatalayer",
+    "builder",
+    "buildtool",
+    "generator"
+  ],
+  "dependencies": {
+    "browserify": "^14.1.0",
+    "eslint": "^3.9.1",
+    "opendatalayer": "^0.0.0"
+  },
+  "author": "Rico Pfaus <rico.pfaus@kaufhof.de>",
+  "license": "MIT"
+}

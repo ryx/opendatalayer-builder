@@ -1,0 +1,19 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 5
+  },
+  "env": {
+    "es6": false,
+    "node": true,
+    "browser": true,
+    "amd": true
+  },
+  "globals": {},
+  "rules": {
+    "import/no-extraneous-dependencies": 0,
+    "no-underscore-dangle": ["off"],
+    "no-param-reassign": ["error", { "props": false }],
+    "global-require": 0,
+    "max-len": ["error", 120]
+  }
+}

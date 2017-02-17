@@ -1,0 +1,34 @@
+
+<html>
+<head>
+  <script src="odl-bundle.js" type="text/javascript" async></script>
+</head>
+<body>
+Testbed for ODL integration
+
+<meta name="odl:data" content='{
+  "site":{
+    "id":"test"
+  },
+  "page": {
+    "name": "Homepage",
+    "type": "homepage"
+  },
+  "user": {
+    "id": "12345678"
+  }
+}' />
+
+<script>
+/** Case: init
+ * We init the ODL here and send a custom event via the window API.
+ * Within our test framework we then check if the event is properly
+ * getting broadcasted to our testing plugin and the received data
+ * is as expected.
+ */
+window._odlq = window._odlq || [];
+window._odlq.push(['broadcast', 'foo', 'bar']);
+</script>
+
+</body>
+</html>
