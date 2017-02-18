@@ -3,8 +3,16 @@ The ODL builder generates a "package" with the opendatalayer library, combined w
 plugins and the required initialization code.
 
 ## Usage
-In your `package.json` you include the `opendatalayer`, `opendatalayer-builder` and any plugins you want to bundle as
-`devDependenices`. Then, in your buildfile, you call ODL builder to create your package. The ODL builder offers a
+
+### Preparation
+Install the OpenDataLayer and OpenDataLayer Builder modules from npm, together with any ODL plugins
+you want to use in your project:
+
+    npm install opendatalayer opendatalayer-builder --save-dev
+    npm install opendatalayer-plugin-example --save-dev
+
+### Simple example
+Then, in your buildfile, you import and call ODL builder to create your package. The ODL builder offers a
 method `buildPackage` which takes a config object and an optional callback parameter.
 
 A very simple build script could look like this:.
@@ -16,8 +24,9 @@ odlBuilder
     outputPath: 'build',
     outputFilename: 'odl-bundle-test.js',
     // This block defines the plugins to be included in the package, together with
-    // their configuration and the respective deployment rules. A rule defines under
-    // which circumstances to plugin will be activated (i.e. receive data) during runtime.
+    // their configuration and the respective deployment rules. A rule defines the
+    // circumstances und which the plugin will be activated (i.e. receive data)
+    // during runtime.
     plugins: {
       'opendatalayer-plugin-exmaple': {
         config: { someValue: 'FOO-BAR-123' },
