@@ -145,7 +145,7 @@ function generateInitScript(config, targetFile) {
 _configuration = {};
 
 /**
- * Provide a configuration object to be used when calling {buildPackage}.
+ * Provide a configuration object to be used when calling {bundle}.
  * @param config {Object} configuration object
  */
 module.exports.configure = function (config) {
@@ -153,12 +153,12 @@ module.exports.configure = function (config) {
 };
 
 /**
- * Generate a "package" with the opendatalayer library, combined with all configured
+ * Generate a "bundle" with the opendatalayer library, combined with all configured
  * plugins and the initialization code.
  * @param config {Object} configuration object
  * @return  {Promise} a promise object to handle the result
  */
-module.exports.buildPackage = function buildPackage(config) {
+module.exports.bundle = function bundle(config) {
   if (config) {
     _configuration = config;
   }

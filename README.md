@@ -13,14 +13,14 @@ you want to use in your project:
 
 ### Simple example
 Then, in your buildfile, you import and call ODL builder to create your package. The ODL builder offers a
-method `buildPackage` which takes a config object and an optional callback parameter.
+method `bundle` which takes a config object and an optional callback parameter.
 
 A very simple build script could look like this:.
 ```javascript
 import odlBuilder from 'opendatalayer-builder';
 
 odlBuilder
-  .buildPackage({
+  .bundle({
     outputPath: 'build',
     outputFilename: 'odl-bundle-test.js',
     // This block defines the plugins to be included in the package, together with
@@ -28,7 +28,7 @@ odlBuilder
     // circumstances und which the plugin will be activated (i.e. receive data)
     // during runtime.
     plugins: {
-      'opendatalayer-plugin-exmaple': {
+      'opendatalayer-plugin-example': {
         config: { someValue: 'FOO-BAR-123' },
         rule: function (data) {
           return data.page.type === 'homepage'; // only activate on pages with type "homepage"
@@ -45,7 +45,7 @@ into a dedicated file. This results in much better separation of concerns and do
 ODL configuration with your project build settings.
 
 Create a dedicated file named `opendatalayer.config.js`, include odlBuilder and add a call to
-the `configure` method, passing your usual configuration as you would when using `buildPackage`:
+the `configure` method, passing your usual configuration as you would when using `bundle`:
 ```javascript
 import odlBuilder from 'opendatalayer-builder';
 
@@ -64,15 +64,26 @@ odlBuilder.configure({
 });
 ```
 
-Then, in your buildfile, you can simply include the configuration and call `buildPackage` without
+Then, in your buildfile, you can simply include the configuration and call `bundle` without
 further options. Here is an example using [gulp](http://www.gulpjs.com), which plays nicely together
-since `buildPackage` returns a `Promise` object which gulp can handle.
+since `bundle` returns a `Promise` object which gulp can handle.
 
 ```javascript
 import odlBuilder from 'opendatalayer-builder';
 import './opendatalayer.config.js';
 
 gulp.task('opendatalayer', () => {
-  odlBuilder.buildPackage().catch(err => console.log(err));
+  odlBuilder.bundle().catch(err => console.log(err));
 });
 ```
+
+## API
+The `opendatalayer-builder` module provides the following public methods:
+
+### configure([config])
+Pass the given configuration to the ODL builder. Read more about plugin configuration and options in the
+[Configuration](#configuration) section.
+
+### bundle([config]) -> Promise
+Build the ODL package based on the provided configuration (or any config passed to `configure`). Returns
+a Promise object which gets passed an error object when rejected.
