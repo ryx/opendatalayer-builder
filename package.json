@@ -6,9 +6,8 @@
     "type": "git",
     "url": "git@gitlab.gkh-setu.de:bsna/opendatalayer-builder.git"
   },
-  "main": "src/index.js",
+  "main": "src/builder.js",
   "scripts": {
-    "build": "./node_modules/.bin/babel src/builder.js  --out-file=dist/builder.cjs.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

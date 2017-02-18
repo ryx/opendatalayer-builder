@@ -141,48 +141,50 @@ function generateInitScript(config, targetFile) {
   return fs.writeFileSync(targetFile, output);
 }
 
+// internal config object
+_configuration = {};
+
+/**
+ * Provide a configuration object to be used when calling {buildPackage}.
+ * @param config {Object} configuration object
+ */
+module.exports.configure = function (config) {
+  _configuration = config;
+};
+
 /**
  * Generate a "package" with the opendatalayer library, combined with all configured
  * plugins and the initialization code.
  * @param config {Object} configuration object
+ * @return  {Promise} a promise object to handle the result
  */
-module.exports.buildPackage = function (config, cb) {
-  //const baseDir = config.baseDir || `/${path.resolve(__dirname)}`;
-  var baseDir = config.baseDir || '/' + path.resolve(__dirname);
-  var entryPoint = '__odl-init.js';
-
-  // fetch ODL base code
-  var odlBasedir = require.resolve('opendatalayer');
-  console.log('ODL base dir:', odlBasedir);
+module.exports.buildPackage = function buildPackage(config) {
+  if (config) {
+    _configuration = config;
+  }
+  var baseDir = _configuration.baseDir || process.cwd();
+  var targetFile = baseDir + '/' + _configuration.outputPath + '/' + _configuration.outputFilename;
+  var tmpFile =  targetFile + '.__tmp.js';
 
   // generate initialization code for ODL
-  //generateInitScript(config, `${baseDir}/${entryPoint}`);
-  generateInitScript(config, baseDir + '/' + entryPoint);
+  generateInitScript(_configuration, tmpFile);
 
   console.log('Running builder in: ', baseDir);
-  console.log('Starting from entry point: ', entryPoint);
+  console.log('Writing temp file to: ', tmpFile);
+  console.log('Writing target file to: ', targetFile);
 
   // run browserify and bundle everything together
-  var bundle = browserify(baseDir + '/' + entryPoint).bundle(function(err, src) {
-    if (!err) {
-      fs.writeFileSync(baseDir + '/odl-bundle.js', src);
-    }
-    cb(err);
-  });
-
-  /* return rollup.rollup({
-    entry: entryPoint,
-    plugins: [rollupBabel({
-      // use our own config here
-      babelrc: false,
-      presets: [['es2015', { modules: false }]],
-      plugins: ['external-helpers'],
-    })],
-  }).then((bundle) => {
-    bundle.write({
-      format: 'umd',
-      dest: './dist/odl-bundle.js',
-      sourceMap: true,
+  return new Promise(function (resolve, reject) {
+    var bundle = browserify(tmpFile).bundle(function(err, src) {
+      if (!err) {
+        fs.writeFileSync(targetFile, src);
+        if (_configuration.debug !== true) {
+          // delete temp file
+          console.log('TODO: delete temp file from', tmpFile);
+        }
+        resolve(src);
+      }
+      reject(err);
     });
-  });*/
+  });
 };
