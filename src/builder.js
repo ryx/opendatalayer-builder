@@ -173,9 +173,14 @@ module.exports.bundle = function bundle(config) {
   console.log('Writing temp file to: ', tmpFile);
   console.log('Writing target file to: ', targetFile);
 
+  // setup browserify
+  var browserifyOpts = {
+    standalone: 'opendatalayer',
+  };
+
   // run browserify and bundle everything together
   return new Promise(function (resolve, reject) {
-    var bundle = browserify(tmpFile).bundle(function(err, src) {
+    var bundle = browserify(tmpFile, browserifyOpts).bundle(function(err, src) {
       if (!err) {
         fs.writeFileSync(targetFile, src);
         if (_configuration.debug !== true) {
