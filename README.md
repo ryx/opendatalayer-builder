@@ -1,3 +1,5 @@
+![build status](https://gitlab.gkh-setu.de/bsna/opendatalayer-builder/badges/master/build.svg)](https://gitlab.gkh-setu.de/bsna/opendatalayer-builder/commits/master)
+
 # OpenDataLayer Builder
 The ODL builder generates a bundled "package" with the [OpenDataLayer framework](https://gitlab.gkh-setu.de/bsna/opendatalayer),
 combined with your configured plugins and their required initialization code. The resulting file can be
