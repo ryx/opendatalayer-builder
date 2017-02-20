@@ -1,12 +1,10 @@
 {
   "parserOptions": {
-    "ecmaVersion": 5
+    "ecmaVersion": 2015
   },
   "env": {
-    "es6": false,
-    "node": true,
-    "browser": true,
-    "amd": true
+    "es6": true,
+    "node": true
   },
   "globals": {},
   "rules": {
@@ -14,6 +12,34 @@
     "no-underscore-dangle": ["off"],
     "no-param-reassign": ["error", { "props": false }],
     "global-require": 0,
-    "max-len": ["error", 120]
+    "max-len": ["error", 200],
+    "block-spacing": 2,
+    "comma-dangle": 2,
+    "comma-spacing": ["error", { "before": false, "after": true }],
+    "arrow-parens": 2,
+    "array-bracket-spacing": 2,
+    "block-scoped-var": 2,
+    "no-alert": 2,
+    "no-const-assign": 2,
+    "no-redeclare": 2,
+    "no-native-reassign": 2,
+    "no-dupe-args": 2,
+    "no-use-before-define": 2,
+    "no-console": 1,
+    "no-duplicate-case": 2,
+    "no-mixed-spaces-and-tabs": 2,
+    "no-multiple-empty-lines": 2,
+    "no-global-assign": 2,
+    "no-implicit-globals": 2,
+    "no-trailing-spaces": 2,
+    "no-undef": 2,
+    "object-curly-spacing": ["error", "always"],
+    "key-spacing": ["error", { "mode": "strict" }],
+    "keyword-spacing": ["error", { "before": true }],
+    "space-in-parens": ["error", "never"],
+    "spaced-comment": 2,
+    "space-before-blocks": 2,
+    "space-infix-ops": 2,
+    "space-before-function-paren": 2
   }
 }
