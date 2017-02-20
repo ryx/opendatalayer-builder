@@ -6,7 +6,7 @@ var browserify = require('browserify');
  * Normalize a module name to an identifier that can be used as variable name.
  * Example: "foo/bar/example" would become "foo_bar_example"
  */
-function normalizePluginName(moduleName, substitute) {
+function normalizePluginName (moduleName, substitute) {
   return moduleName.replace(/[\-\/]/g, substitute || '_');
 }
 module.exports.normalizePluginName = normalizePluginName;
@@ -15,7 +15,7 @@ module.exports.normalizePluginName = normalizePluginName;
  * Generate a string with ES6 import statements based on the given configuration
  * @return {String}
  */
-function generateES6ImportString(config) {
+function generateES6ImportString (config) {
   var output = 'import { odl } from "opendatalayer";\n';
   for (var name in config.plugins || {}) {
     if (!config.hasOwnProperty(name)) {
@@ -29,7 +29,7 @@ function generateES6ImportString(config) {
  * Generate a string with ES5 import statements based on the given configuration
  * @return {String}
  */
-function generateES5ImportString(config) {
+function generateES5ImportString (config) {
   var output = 'var odl = require("opendatalayer").odl;\n';
   for (var name in config.plugins || {}) {
     if (!config.hasOwnProperty(name)) {
@@ -46,7 +46,7 @@ function generateES5ImportString(config) {
  * @param config
  * @return {Object}
  */
-function validateConfiguration(config) {
+function validateConfiguration (config) {
   // validate configuration and rules
   if (!config.config) {
     throw new Error('validateConfiguration: config missing for plugin ' + config);
@@ -61,7 +61,7 @@ function validateConfiguration(config) {
  * @param plugins  {Array<Object>}   object literal with plugin configurations
  * @return {String}
  */
-function generateConfiguration(plugins) {
+function generateConfiguration (plugins) {
   // build configuration block
   var output = 'var ODL_CONFIG = {\n';
   for (var name in plugins || {}) {
@@ -80,7 +80,7 @@ function generateConfiguration(plugins) {
  * @param plugins  {Array<Object>}   object literal with plugin configurations
  * @return {String}
  */
-function generateRuleset(plugins) {
+function generateRuleset (plugins) {
   // build configuration block
   var output = 'var ODL_RULES = {\n';
   for (var name in plugins || {}) {
@@ -100,7 +100,7 @@ function generateRuleset(plugins) {
  * @param plugins  {Array<Object>}   object literal with plugin configurations
  * @return {String}
  */
-function generateMappings(plugins) {
+function generateMappings (plugins) {
   // build configuration block
   var output = 'var ODL_MAPPINGS = {\n';
   for (var name in plugins || {}) {
@@ -117,7 +117,7 @@ function generateMappings(plugins) {
  * Generate the ODL initialization block based on given config and rules.
  * @return {String}
  */
-function generateODLInitialization() {
+function generateODLInitialization () {
   var output = 'odl.initialize({}, ODL_RULES, ODL_CONFIG, {}, ODL_MAPPINGS);';
   return output;
 }
@@ -128,7 +128,7 @@ function generateODLInitialization() {
  * @param config  {Object}  ODL configuration object as passed to odl.init
  * @param targetFilename  {String}  absolute path (incl. filename) to write the init script to
  */
-function generateInitScript(config, targetFile) {
+function generateInitScript (config, targetFile) {
   var output = '';
 
   // generate main code
@@ -142,13 +142,23 @@ function generateInitScript(config, targetFile) {
 }
 
 // internal config object
-_configuration = {};
+var _configuration = {};
 
 /**
  * Provide a configuration object to be used when calling {bundle}.
  * @param config {Object} configuration object
  */
-module.exports.configure = function (config) {
+module.exports.configure = function configure (config) {
+  var knownOptions = [
+    'baseDir',
+    'outputPath',
+    'outputFilename'
+    ];
+  for (var prop in config) {
+    if (config.hasOwnProperty(prop) && knownOptions.indexOf(prop) === -1) {
+      throw new Error('configure: option "' + prop + '" is unknown');
+    }
+  }
   _configuration = config;
 };
 
@@ -158,34 +168,36 @@ module.exports.configure = function (config) {
  * @param config {Object} configuration object
  * @return  {Promise} a promise object to handle the result
  */
-module.exports.bundle = function bundle(config) {
+module.exports.bundle = function bundle (config) {
   if (config) {
     _configuration = config;
   }
-  var baseDir = _configuration.baseDir || process.cwd();
+  var baseDir = _configuration.baseDir || process.cwd();  // @FIXME: instead use path where opendatalayer.config.js was found?
   var targetFile = baseDir + '/' + _configuration.outputPath + '/' + _configuration.outputFilename;
   var tmpFile =  targetFile + '.__tmp.js';
 
   // generate initialization code for ODL
   generateInitScript(_configuration, tmpFile);
 
-  console.log('Running builder in: ', baseDir);
-  console.log('Writing temp file to: ', tmpFile);
-  console.log('Writing target file to: ', targetFile);
+  if (_configuration.debug === true) {
+    console.log('Running builder in: ', baseDir);
+    console.log('Writing temp file to: ', tmpFile);
+    console.log('Writing target file to: ', targetFile);
+  }
 
   // setup browserify
   var browserifyOpts = {
-    standalone: 'opendatalayer',
+    standalone: 'opendatalayer'
   };
 
   // run browserify and bundle everything together
   return new Promise(function (resolve, reject) {
-    var bundle = browserify(tmpFile, browserifyOpts).bundle(function(err, src) {
+    var bundle = browserify(tmpFile, browserifyOpts).bundle(function (err, src) {
       if (!err) {
         fs.writeFileSync(targetFile, src);
         if (_configuration.debug !== true) {
           // delete temp file
-          console.log('TODO: delete temp file from', tmpFile);
+          fs.unlinkSync(tmpFile);
         }
         resolve(src);
       }
