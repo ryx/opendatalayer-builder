@@ -1,6 +1,8 @@
 # OpenDataLayer Builder
-The ODL builder generates a "package" with the opendatalayer library, combined with all configured
-plugins and the required initialization code.
+The ODL builder generates a bundled "package" with the [OpenDataLayer framework](https://gitlab.gkh-setu.de/bsna/opendatalayer),
+combined with your configured plugins and their required initialization code. The resulting file can be
+directly included in your web project and offers all the benefits of the ODL right out-of-the-box. No further
+setup or manual intervention required.
 
 ## Usage
 
@@ -12,8 +14,9 @@ you want to use in your project:
     npm install opendatalayer-plugin-example --save-dev
 
 ### Simple example
-Then, in your buildfile, you import and call ODL builder to create your package. The ODL builder offers a
-method `bundle` which takes a config object and an optional callback parameter.
+In your project's buildfile you import and call ODL builder to create your package. The builder offers a
+[bundle](#api) method which takes a configuration object to set up ODL and control name and target of the
+resulting file.
 
 A very simple build script could look like this:.
 ```javascript
@@ -40,12 +43,13 @@ odlBuilder
 ```
 
 ### Separating the ODL configuration
-Another (more scalable) approach is to completely separate your OpenDataLayer configuration
+Another, more scalable approach is to completely separate your OpenDataLayer configuration
 into a dedicated file. This results in much better separation of concerns and doesn't mix up your
 ODL configuration with your project build settings.
 
-Create a dedicated file named `opendatalayer.config.js`, include odlBuilder and add a call to
-the `configure` method, passing your usual configuration as you would when using `bundle`:
+For this you simply create a dedicated file named `opendatalayer.config.js`, include odlBuilder and
+add a call to the [configure](#api) method, passing your usual configuration as you would when
+using [bundle](#api):
 ```javascript
 import odlBuilder from 'opendatalayer-builder';
 
@@ -64,17 +68,15 @@ odlBuilder.configure({
 });
 ```
 
-Then, in your buildfile, you can simply include the configuration and call `bundle` without
+Then, in your buildfile, you can simply include the configuration and call [bundle](#api) without
 further options. Here is an example using [gulp](http://www.gulpjs.com), which plays nicely together
-since `bundle` returns a `Promise` object which gulp can handle.
+since [bundle](#api) returns a `Promise` object which gulp can handle.
 
 ```javascript
 import odlBuilder from 'opendatalayer-builder';
 import './opendatalayer.config.js';
 
-gulp.task('opendatalayer', () => {
-  odlBuilder.bundle().catch(err => console.log(err));
-});
+gulp.task('opendatalayer', () => odlBuilder.bundle());
 ```
 
 ## API
@@ -85,5 +87,5 @@ Pass the given configuration to the ODL builder. Read more about plugin configur
 [Configuration](#configuration) section.
 
 ### bundle([config]) -> Promise
-Build the ODL package based on the provided configuration (or any config passed to `configure`). Returns
+Build the ODL package based on the provided configuration (or any config passed to [configure](#api)). Returns
 a Promise object which gets passed an error object when rejected.
