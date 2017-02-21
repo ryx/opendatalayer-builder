@@ -51,6 +51,14 @@ describe('odl-builder', function () {
     it ('should be a function', function () {
       assert.isFunction(odlBuilder.normalizePluginName);
     });
+
+    it ('should replace dashes in module names with an underscore', function () {
+      assert.equal(odlBuilder.normalizePluginName('my-module-name'), 'my_module_name');
+    });
+
+    it ('should replace slashes in module names with an underscore', function () {
+      assert.equal(odlBuilder.normalizePluginName('my/module/name'), 'my_module_name');
+    });
   });
 
   describe ('configure', function () {
@@ -103,6 +111,19 @@ describe('odl-builder', function () {
       assert.isFunction(odlBuilder.bundle);
     });
 
+    it ('should throw an error if invalid options are provided', function () {
+      var options = { kaboom: 'foo' };
+      assert.throws(function () {
+        odlBuilder.bundle(options);
+      }, 'configure: option "kaboom" is unknown');
+    });
+
+    it ('should NOT throw an error if valid options are provided', function () {
+      assert.doesNotThrow(function () {
+        odlBuilder.bundle(config);
+      }, 'configure: option "kaboom" is unknown');
+    });
+
     it ('should write the temporary output to "/{config.outputPath}/{config.outputFilename}.__tmp.js"', function () {
       return odlBuilder.bundle(config)
         .then(function () {
@@ -128,6 +149,14 @@ describe('odl-builder', function () {
       return odlBuilder.bundle(config)
         .then(function () {
           sinon.assert.calledWith(fsStub.unlinkSync, './output/myfile.js.__tmp.js');
+        });
+    });
+
+    it ('should NOT call unlink on the temporary output if browserify.bundle DOES NOT throw an error but {config.debug} is true', function () {
+      config.debug = true;
+      return odlBuilder.bundle(config)
+        .then(function () {
+          sinon.assert.neverCalledWith(fsStub.unlinkSync, './output/myfile.js.__tmp.js');
         });
     });
 

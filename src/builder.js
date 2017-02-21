@@ -6,8 +6,8 @@ var browserify = require('browserify');
  * Normalize a module name to an identifier that can be used as variable name.
  * Example: "foo/bar/example" would become "foo_bar_example"
  */
-function normalizePluginName (moduleName, substitute) {
-  return moduleName.replace(/[\-\/]/g, substitute || '_');
+function normalizePluginName (moduleName) {
+  return moduleName.replace(/[\-\/]/g, '_');
 }
 module.exports.normalizePluginName = normalizePluginName;
 
@@ -126,9 +126,9 @@ function generateODLInitialization () {
  * Generate the complete ODL initscript that contains import statements for all required
  * plugins and the odl.init call.
  * @param config  {Object}  ODL configuration object as passed to odl.init
- * @param targetFilename  {String}  absolute path (incl. filename) to write the init script to
+
  */
-function generateInitScript (config, targetFile) {
+function generateInitScript (config) {
   var output = '';
 
   // generate main code
@@ -138,18 +138,19 @@ function generateInitScript (config, targetFile) {
   output += generateMappings(config.plugins) + '\n';
   output += generateODLInitialization();
 
-  return fs.writeFileSync(targetFile, output);
+  return output;
 }
-
-// internal config object
-var _configuration = {};
+module.exports.generateInitScript = generateInitScript;
 
 /**
- * Provide a configuration object to be used when calling {bundle}.
+ * Validate the options in the given configuration object. Throws an error
+ * if any of the provided options is unknown.
  * @param config {Object} configuration object
+ * @return {Boolean}
  */
-module.exports.configure = function configure (config) {
+function validateOptions (config) {
   var knownOptions = [
+    'debug',
     'baseDir',
     'outputPath',
     'outputFilename'
@@ -157,9 +158,28 @@ module.exports.configure = function configure (config) {
   for (var prop in config) {
     if (config.hasOwnProperty(prop) && knownOptions.indexOf(prop) === -1) {
       throw new Error('configure: option "' + prop + '" is unknown');
+      return false;
     }
   }
-  _configuration = config;
+  return true;
+}
+
+// internal config object
+var _configuration = {};
+
+/**
+ * Provide a configuration object to be used when calling {bundle}. Internally
+ * calls {validateOptions} and might throw an error when invalid options
+ * are provided.
+ * @param config {Object} configuration object
+ * @return {Boolean}
+ */
+module.exports.configure = function configure (config) {
+  if (validateOptions(config)) {
+    _configuration = config;
+    return true;
+  }
+  return false;
 };
 
 /**
@@ -169,7 +189,7 @@ module.exports.configure = function configure (config) {
  * @return  {Promise} a promise object to handle the result
  */
 module.exports.bundle = function bundle (config) {
-  if (config) {
+  if (config && validateOptions(config)) {
     _configuration = config;
   }
   var baseDir = _configuration.baseDir || process.cwd();  // @FIXME: instead use path where opendatalayer.config.js was found?
@@ -177,7 +197,8 @@ module.exports.bundle = function bundle (config) {
   var tmpFile =  targetFile + '.__tmp.js';
 
   // generate initialization code for ODL
-  generateInitScript(_configuration, tmpFile);
+  var initScript = generateInitScript(_configuration);
+  fs.writeFileSync(tmpFile, initScript);
 
   if (_configuration.debug === true) {
     console.log('Running builder in: ', baseDir);
