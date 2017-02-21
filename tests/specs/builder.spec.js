@@ -47,17 +47,17 @@ describe('odl-builder', function () {
     mockery.deregisterAll();
   });
 
-  describe ('normalizePluginName', function () {
+  describe ('_normalizePluginName', function () {
     it ('should be a function', function () {
-      assert.isFunction(odlBuilder.normalizePluginName);
+      assert.isFunction(odlBuilder._normalizePluginName);
     });
 
     it ('should replace dashes in module names with an underscore', function () {
-      assert.equal(odlBuilder.normalizePluginName('my-module-name'), 'my_module_name');
+      assert.equal(odlBuilder._normalizePluginName('my-module-name'), 'my_module_name');
     });
 
     it ('should replace slashes in module names with an underscore', function () {
-      assert.equal(odlBuilder.normalizePluginName('my/module/name'), 'my_module_name');
+      assert.equal(odlBuilder._normalizePluginName('my/module/name'), 'my_module_name');
     });
   });
 

@@ -9,7 +9,7 @@ var browserify = require('browserify');
 function normalizePluginName (moduleName) {
   return moduleName.replace(/[\-\/]/g, '_');
 }
-module.exports.normalizePluginName = normalizePluginName;
+module.exports._normalizePluginName = normalizePluginName;
 
 /**
  * Generate a string with ES6 import statements based on the given configuration
@@ -126,7 +126,7 @@ function generateODLInitialization () {
  * Generate the complete ODL initscript that contains import statements for all required
  * plugins and the odl.init call.
  * @param config  {Object}  ODL configuration object as passed to odl.init
-
+ * @return {String}
  */
 function generateInitScript (config) {
   var output = '';
@@ -140,7 +140,7 @@ function generateInitScript (config) {
 
   return output;
 }
-module.exports.generateInitScript = generateInitScript;
+module.exports._generateInitScript = generateInitScript;
 
 /**
  * Validate the options in the given configuration object. Throws an error
@@ -166,6 +166,10 @@ function validateOptions (config) {
 
 // internal config object
 var _configuration = {};
+
+
+
+// PUBLIC API
 
 /**
  * Provide a configuration object to be used when calling {bundle}. Internally
