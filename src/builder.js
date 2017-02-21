@@ -153,7 +153,8 @@ function validateOptions (config) {
     'debug',
     'baseDir',
     'outputPath',
-    'outputFilename'
+    'outputFilename',
+    'plugins'
     ];
   for (var prop in config) {
     if (config.hasOwnProperty(prop) && knownOptions.indexOf(prop) === -1) {
