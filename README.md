@@ -91,3 +91,61 @@ Pass the given configuration to the ODL builder. Read more about plugin configur
 ### bundle([config]) -> Promise
 Build the ODL package based on the provided configuration (or any config passed to [configure](#api)). Returns
 a Promise object which gets passed an error object when rejected.
+
+## Concepts
+Behind the scenens the ODL Builder generates a piece of bootstrapping code and uses [browserify](http://browserify.org/) to bundle it
+together with the ODL core library and all configured plugins. The bootstrapping code is a rather simple,
+ES5-compliant piece of Javascript that joins all the other parts together.
+
+The following, commented example snippet demonstrates the bootstrapping code:
+
+```javascript
+// load ODL library
+var _odl = require("opendatalayer").odl;
+
+// load standalone plugin
+var opendatalayer_plugin_example = require("opendatalayer-plugin-example").default;
+console.log("Plugin: opendatalayer-plugin-example", opendatalayer_plugin_example);
+
+// load  set of local plugins
+var ___node_modules_opendatalayer_plugins_kaufhof_dist_trbo = require("../node_modules/opendatalayer-plugins-kaufhof/dist/trbo").default;
+console.log("Plugin: ../node_modules/opendatalayer-plugins-kaufhof/dist/trbo", ___node_modules_opendatalayer_plugins_kaufhof_dist_trbo);
+
+// generate plugin configuration (as taken from config provided in builder)
+var ODL_CONFIG = {
+ "opendatalayer-plugin-example": {"fooBar":"FOO-BAR-123"},
+ "../node_modules/opendatalayer-plugins-kaufhof/dist/trbo": {"scriptUrl":"..."},
+};
+
+// generate rules setup (as taken from config provided in builder)
+var ODL_RULES = {
+ "opendatalayer-plugin-example": function rule(data) {
+        return data.page.type === 'homepage';
+      },
+ "../node_modules/opendatalayer-plugins-kaufhof/dist/trbo": function rule(data) {
+        return true;
+      },
+};
+
+// generate plugin references (used to look up constructor based on id)
+var ODL_MAPPINGS = {
+ "opendatalayer-plugin-example": opendatalayer_plugin_example,
+ "../node_modules/opendatalayer-plugins-kaufhof/dist/trbo": ___node_modules_opendatalayer_plugins_kaufhof_dist_trbo,
+};
+
+// perform initialization (including an example of the onBeforeInitialization callback)
+var ODL_DATA = {};
+(function (odl, data, done) {
+  // START: onBeforeInitialization callback
+  window.require(['gk/lib/mediaQuery'], function (mq) {
+    data.kaufhof = {
+      breakpoint: mq.currentRange
+    };
+    done();
+  });
+// END: onBeforeInitialization callback
+}(_odl, ODL_DATA, function () {
+  _odl.initialize(ODL_DATA, ODL_RULES, ODL_CONFIG, {}, ODL_MAPPINGS);
+}));
+
+```
