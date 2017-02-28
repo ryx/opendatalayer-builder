@@ -17,11 +17,13 @@ module.exports._normalizePluginName = normalizePluginName;
  */
 function generateES6ImportString (config) {
   var output = 'import { odl } from "opendatalayer";\n';
+
   for (var name in config.plugins || {}) {
     if (!config.hasOwnProperty(name)) {
       output += 'import ' + normalizePluginName(name) + ' from "' + name + '";\n';
     }
   }
+
   return output;
 }
 
@@ -30,13 +32,15 @@ function generateES6ImportString (config) {
  * @return {String}
  */
 function generateES5ImportString (config) {
-  var output = 'var odl = require("opendatalayer").odl;\n';
+  var output = 'var __$odl = require("opendatalayer").odl;\n';
+
   for (var name in config.plugins || {}) {
     if (!config.hasOwnProperty(name)) {
       output += 'var ' + normalizePluginName(name) + ' = require("' + name + '").default;\n';
       output += 'console.log("Plugin: ' + name + '", ' + normalizePluginName(name) + ');\n';
     }
   }
+
   return output;
 }
 
@@ -62,8 +66,9 @@ function validateConfiguration (config) {
  * @return {String}
  */
 function generateConfiguration (plugins) {
+  var output = 'var __$ODL_CONFIG = {\n';
+
   // build configuration block
-  var output = 'var ODL_CONFIG = {\n';
   for (var name in plugins || {}) {
     if (plugins.hasOwnProperty(name)) {
       var entry = plugins[name];
@@ -72,6 +77,7 @@ function generateConfiguration (plugins) {
     }
   }
   output += '};\n';
+
   return output;
 }
 
@@ -81,8 +87,9 @@ function generateConfiguration (plugins) {
  * @return {String}
  */
 function generateRuleset (plugins) {
+  var output = 'var __$ODL_RULES = {\n';
+
   // build configuration block
-  var output = 'var ODL_RULES = {\n';
   for (var name in plugins || {}) {
     if (plugins.hasOwnProperty(name)) {
       var entry = plugins[name];
@@ -91,6 +98,7 @@ function generateRuleset (plugins) {
     }
   }
   output += '};\n';
+
   return output;
 }
 
@@ -101,8 +109,9 @@ function generateRuleset (plugins) {
  * @return {String}
  */
 function generateMappings (plugins) {
+  var output = 'var __$ODL_MAPPINGS = {\n';
+
   // build configuration block
-  var output = 'var ODL_MAPPINGS = {\n';
   for (var name in plugins || {}) {
     if (plugins.hasOwnProperty(name)) {
       // output += `  '${name}': ${normalizePluginName(name)},\n`;
@@ -110,15 +119,28 @@ function generateMappings (plugins) {
     }
   }
   output += '};\n';
+
   return output;
 }
 
 /**
- * Generate the ODL initialization block based on given config and rules.
+ * Generate the ODL initialization block based on given config and rules. If a callback
+ * is provided, the odl.initialize call is wrapped into an IIFE and the callback will be
+ * executed prior to initialization.
+ * @param callback  {Function}  (optional)  callback to execute before init
  * @return {String}
  */
-function generateODLInitialization () {
-  var output = 'odl.initialize({}, ODL_RULES, ODL_CONFIG, {}, ODL_MAPPINGS);';
+function generateODLInitialization (callback) {
+  var output = '__$ODL_DATA = {};\n';
+
+  if (callback) {
+    output += '(' + callback + '(__$odl, __$ODL_DATA, function () {\n  ';
+  }
+  output += '__$odl.initialize(__$ODL_DATA, __$ODL_RULES, __$ODL_CONFIG, {}, __$ODL_MAPPINGS);\n';
+  if (callback) {
+    output += '}));';
+  }
+
   return output;
 }
 
@@ -131,12 +153,14 @@ function generateODLInitialization () {
 function generateInitScript (config) {
   var output = '';
 
-  // generate main code
+  // generate setup code
   output += generateES5ImportString(config) + '\n';
   output += generateConfiguration(config.plugins);
   output += generateRuleset(config.plugins);
   output += generateMappings(config.plugins) + '\n';
-  output += generateODLInitialization();
+
+  // generate init block
+  output += generateODLInitialization(config.onBeforeInitialize);
 
   return output;
 }
@@ -154,7 +178,8 @@ function validateOptions (config) {
     'baseDir',
     'outputPath',
     'outputFilename',
-    'plugins'
+    'plugins',
+    'onBeforeInitialize'
     ];
   for (var prop in config) {
     if (config.hasOwnProperty(prop) && knownOptions.indexOf(prop) === -1) {
