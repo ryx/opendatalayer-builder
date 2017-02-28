@@ -7,7 +7,7 @@ var browserify = require('browserify');
  * Example: "foo/bar/example" would become "foo_bar_example"
  */
 function normalizePluginName (moduleName) {
-  return moduleName.replace(/[\-\/]/g, '_');
+  return moduleName.replace(/[\-\/\.]/g, '_');
 }
 module.exports._normalizePluginName = normalizePluginName;
 
@@ -168,9 +168,9 @@ function validateOptions (config) {
 // internal config object
 var _configuration = {};
 
-
-
+//
 // PUBLIC API
+//
 
 /**
  * Provide a configuration object to be used when calling {bundle}. Internally
@@ -219,15 +219,15 @@ module.exports.bundle = function bundle (config) {
   // run browserify and bundle everything together
   return new Promise(function (resolve, reject) {
     var bundle = browserify(tmpFile, browserifyOpts).bundle(function (err, src) {
-      if (!err) {
-        fs.writeFileSync(targetFile, src);
-        if (_configuration.debug !== true) {
-          // delete temp file
-          fs.unlinkSync(tmpFile);
+        if (!err) {
+          fs.writeFileSync(targetFile, src);
+          if (_configuration.debug !== true) {
+            // delete temp file
+            fs.unlinkSync(tmpFile);
+          }
+          resolve(src);
         }
-        resolve(src);
-      }
-      reject(err);
-    });
+        reject(err);
+      });
   });
 };

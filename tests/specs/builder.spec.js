@@ -59,6 +59,10 @@ describe('odl-builder', function () {
     it ('should replace slashes in module names with an underscore', function () {
       assert.equal(odlBuilder._normalizePluginName('my/module/name'), 'my_module_name');
     });
+
+    it ('should properly normalize module names containing relative paths', function () {
+      assert.equal(odlBuilder._normalizePluginName('../../my/module/name'), '______my_module_name');
+    });
   });
 
   describe ('configure', function () {
