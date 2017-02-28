@@ -134,7 +134,12 @@ function generateODLInitialization (callback) {
   var output = '__$ODL_DATA = {};\n';
 
   if (callback) {
-    output += '(' + callback + '(__$odl, __$ODL_DATA, function () {\n  ';
+    output += '(';
+    output += '// START: onBeforeInitialize callback\n';
+    output += callback;
+    output += '// END: onBeforeInitialize callback\n';
+    output += '(__$odl, __$ODL_DATA, function () {\n  ';
+
   }
   output += '__$odl.initialize(__$ODL_DATA, __$ODL_RULES, __$ODL_CONFIG, {}, __$ODL_MAPPINGS);\n';
   if (callback) {
