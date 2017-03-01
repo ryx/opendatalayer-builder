@@ -1,4 +1,6 @@
-[![build status](https://gitlab.gkh-setu.de/bsna/opendatalayer-builder/badges/master/build.svg)](https://gitlab.gkh-setu.de/bsna/opendatalayer-builder/commits/master)
+> **Please note that this project is still in the process of being prepared and polished
+> to become a standalone tool and project. Any documentation might be incomplete and/or
+> misleading. So no complains, you've been warned ;-) ..**
 
 # OpenDataLayer Builder
 The ODL builder generates a bundled "package" with the [OpenDataLayer framework](https://gitlab.gkh-setu.de/bsna/opendatalayer),
