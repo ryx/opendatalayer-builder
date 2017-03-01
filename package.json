@@ -4,7 +4,7 @@
   "description": "Buildtool for the opendatalayer",
   "repository": {
     "type": "git",
-    "url": "git@gitlab.gkh-setu.de:bsna/opendatalayer-builder.git"
+    "url": "https://github.com/ryx/opendatalayer-builder"
   },
   "main": "src/builder.js",
   "scripts": {

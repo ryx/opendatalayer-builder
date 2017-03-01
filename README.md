@@ -3,7 +3,7 @@
 > misleading. So no complains, you've been warned ;-) ..**
 
 # OpenDataLayer Builder
-The ODL builder generates a bundled "package" with the [OpenDataLayer framework](https://gitlab.gkh-setu.de/bsna/opendatalayer),
+The ODL builder generates a bundled "package" with the [OpenDataLayer framework](https://github.com/ryx/opendatalayer),
 combined with your configured plugins and their required initialization code. The resulting file can be
 directly included in your web project and offers all the benefits of the ODL right out-of-the-box. No further
 setup or manual intervention required.
