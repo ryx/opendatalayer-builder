@@ -2,6 +2,8 @@
 > to become a standalone tool and project. Any documentation might be incomplete and/or
 > misleading. So no complains, you've been warned ;-) ..**
 
+[![Build Status](https://travis-ci.org/ryx/opendatalayer-builder.svg?branch=master)](https://travis-ci.org/ryx/opendatalayer-builder)
+
 # OpenDataLayer Builder
 The ODL builder generates a bundled "package" with the [OpenDataLayer framework](https://github.com/ryx/opendatalayer),
 combined with your configured plugins and their required initialization code. The resulting file can be
